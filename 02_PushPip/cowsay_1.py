@@ -51,8 +51,8 @@ parser.add_argument(
     "-b",
     dest="apperance",
     action="append_const",
-    const='b',
-    default=[''],
+    const="b",
+    default=[""],
     help="option initiates Borg mode",
     required=False,
 )
@@ -62,8 +62,8 @@ parser.add_argument(
     "-d",
     dest="apperance",
     action="append_const",
-    const='d',
-    default=[''],
+    const="d",
+    default=[""],
     help="causes the cow to appear dead",
     required=False,
 )
@@ -73,8 +73,8 @@ parser.add_argument(
     "-g",
     dest="apperance",
     action="append_const",
-    const='g',
-    default=[''],
+    const="g",
+    default=[""],
     help="invokes greedy mode",
     required=False,
 )
@@ -84,8 +84,8 @@ parser.add_argument(
     "-p",
     dest="apperance",
     action="append_const",
-    const='p',
-    default=[''],
+    const="p",
+    default=[""],
     help="causes a state of paranoia to come over the cow",
     required=False,
 )
@@ -95,8 +95,8 @@ parser.add_argument(
     "-s",
     dest="apperance",
     action="append_const",
-    const='s',
-    default=[''],
+    const="s",
+    default=[""],
     help="makes the cow appear thoroughly stoned",
     required=False,
 )
@@ -106,8 +106,8 @@ parser.add_argument(
     "-t",
     dest="apperance",
     action="append_const",
-    const='t',
-    default=[''],
+    const="t",
+    default=[""],
     help="yields a tired cow",
     required=False,
 )
@@ -117,8 +117,8 @@ parser.add_argument(
     "-w",
     dest="apperance",
     action="append_const",
-    const='w',
-    default=[''],
+    const="w",
+    default=[""],
     help="initiates wired mode",
     required=False,
 )
@@ -128,8 +128,8 @@ parser.add_argument(
     "-y",
     dest="apperance",
     action="append_const",
-    const='y',
-    default=[''],
+    const="y",
+    default=[""],
     help="brings on the cow's youthful appearance",
     required=False,
 )
@@ -141,23 +141,26 @@ parser.add_argument(
     required=False,
 )
 
-parser.add_argument("message", action="store", default="", help="what cow will say", nargs='?')
+parser.add_argument(
+    "message", action="store", default="", help="what cow will say", nargs="?"
+)
 
 args = parser.parse_args(sys.argv[1:])
 print(sys.argv)
-if (not(len(args.message)) and args.l):
+if not (len(args.message)) and args.l:
     print(cowsay.list_cows())
-else: 
-	print(
-		cowsay.cowsay(
-			args.message,
-			cow=args.cowfile if (args.cowfile.find('/') == -1 and args.cowfile in cowsay.list_cows()) else default,
-			eyes=args.eyes[0:2],
-			preset=max(args.apperance),
-			tongue=args.tongue[0:2],
-			width=args.wrap,
-			wrap_text=args.is_wrap,
-        	cowfile=args.cowfile if args.cowfile.find('/') != -1 else None
-		)
-	)
-
+else:
+    print(
+        cowsay.cowsay(
+            args.message,
+            cow=args.cowfile
+            if (args.cowfile.find("/") == -1 and args.cowfile in cowsay.list_cows())
+            else default,
+            eyes=args.eyes[0:2],
+            preset=max(args.apperance),
+            tongue=args.tongue[0:2],
+            width=args.wrap,
+            wrap_text=args.is_wrap,
+            cowfile=args.cowfile if args.cowfile.find("/") != -1 else None,
+        )
+    )
