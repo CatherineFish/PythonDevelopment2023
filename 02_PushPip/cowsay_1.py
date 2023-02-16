@@ -1,4 +1,4 @@
-from cowsay import cowsay
+import cowsay
 import argparse
 import sys
 
@@ -134,18 +134,28 @@ parser.add_argument(
     required=False,
 )
 
-parser.add_argument("message", action="store", default="", help="what cow will say")
+parser.add_argument(
+    "-l",
+    action="store_true",
+    help="list of cows",
+    required=False,
+)
+
+parser.add_argument("message", action="store", default="", help="what cow will say", nargs='?')
 
 args = parser.parse_args(sys.argv[1:])
+print(sys.argv)
+if (not(len(args.message)) and args.l):
+    print(cowsay.list_cows())
+else: 
+	print(
+		cowsay.cowsay(
+			args.message,
+			eyes=args.eyes[0:2],
+			preset=max(args.apperance),
+			tongue=args.tongue[0:2],
+			width=args.wrap,
+			wrap_text=args.is_wrap,
+		)
+	)
 
-print(
-    cowsay(
-        args.message,
-        eyes=args.eyes,
-        preset=max(args.apperance),
-        tongue=args.tongue,
-        width=args.wrap,
-        wrap_text=args.is_wrap,
-    )
-)
-print(args)
