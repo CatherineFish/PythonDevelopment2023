@@ -20,7 +20,7 @@ parser.add_argument(
     dest="cowfile",
     action="store",
     default="",
-    help="path to cowfile",
+    help="path to args.cowfile",
     required=False,
 )
 parser.add_argument(
@@ -151,11 +151,13 @@ else:
 	print(
 		cowsay.cowsay(
 			args.message,
+			cow=args.cowfile if (args.cowfile.find('/') == -1 and args.cowfile in cowsay.list_cows()) else default,
 			eyes=args.eyes[0:2],
 			preset=max(args.apperance),
 			tongue=args.tongue[0:2],
 			width=args.wrap,
 			wrap_text=args.is_wrap,
+        	cowfile=args.cowfile if args.cowfile.find('/') != -1 else None
 		)
 	)
 
