@@ -21,4 +21,7 @@ parser.add_argument('message', action='store',
                      default="",
                     help="what cow will say")
 
+args = parser.parse_args(sys.argv[1:])
+
+print(cowsay(args.message, eyes=args.eyes, tongue=args.tongue, width=args.wrap, wrap_text=args.is_wrap)) 
 print(args)
