@@ -155,7 +155,7 @@ else:
             args.message,
             cow=args.cowfile
             if (args.cowfile.find("/") == -1 and args.cowfile in cowsay.list_cows())
-            else default,
+            else 'default',
             eyes=args.eyes[0:2],
             preset=max(args.apperance),
             tongue=args.tongue[0:2],
