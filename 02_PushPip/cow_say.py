@@ -26,7 +26,7 @@ parser.add_argument(
 parser.add_argument(
     "-n",
     dest="is_wrap",
-    action="store_true",
+    action="store_false",
     help="the given message will not be word-wrapped",
     required=False,
 )
@@ -45,6 +45,7 @@ parser.add_argument(
     default=40,
     help="where the message should be wrapped",
     required=False,
+    type=int,
 )
 
 parser.add_argument(
@@ -142,12 +143,11 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "message", action="store", default="", help="what cow will say", nargs="?"
+    "message", action="store", default=" ", help="what cow will say", nargs="?"
 )
 
 args = parser.parse_args(sys.argv[1:])
-print(sys.argv)
-if not (len(args.message)) and args.l:
+if (args.message) == " " and args.l:
     print(cowsay.list_cows())
 else:
     print(
