@@ -34,7 +34,7 @@ parser.add_argument(
     "-T",
     dest="tongue",
     action="store",
-    default="",
+    default="  ",
     help="cow's tongue, first two chars wil be used",
     required=False,
 )
