@@ -1,5 +1,4 @@
 import random
-from datetime import datetime
 from typing import List
 import argparse
 import sys
@@ -23,9 +22,7 @@ def bullscows(guess: str, secret: str) -> (int, int):
 
 
 def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
-	random.seed() #надо ли инициализировать временем? если нет, убрать импорт
 	secret_word = words[random.randint(0, len(words))]
-	print(secret_word)
 	guess_word = ""
 	tries = 0
 	while(secret_word != guess_word):
@@ -37,10 +34,11 @@ def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
 
 
 def ask(prompt: str, valid: List[str] = None) -> str:
-	print(str)
+	print(prompt)
 	printed_word = input()
-	if (valid != None and printed_word not in valid):
-		pritn(str)
+	while (valid != None and printed_word not in valid):
+		print(prompt)
+		printed_word = input()
 	return printed_word
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
@@ -75,4 +73,4 @@ if __name__ == "__main__":
 			print("Error as URL:\n",  e1)
 			print("Error as file:\n", e2)
 	my_dict = list(filter(lambda x: len(x) == args.len, my_dict))
-	print(my_dict)
+	print("Number of attempts:", gameplay(ask, inform, my_dict))
