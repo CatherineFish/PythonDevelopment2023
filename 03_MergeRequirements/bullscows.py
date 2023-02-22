@@ -3,6 +3,9 @@ from datetime import datetime
 from typing import List
 import argparse
 import sys
+import urllib.request
+import urllib.error
+
 
 def bullscows(guess: str, secret: str) -> (int, int):
 	cow = 0
@@ -61,4 +64,11 @@ parser.add_argument(
 if __name__ == "__main__":
 	args = parser.parse_args(sys.argv[1:])
 	print(args)
+	my_dict = list()
+	try:
+		with urllib.request.urlopen(args.dictionary) as f:
+			my_dict = f.read().decode('utf-8').split()
+	except urllib.error.URLError as e:
+		print(e.reason)
+
 
