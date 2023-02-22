@@ -1,7 +1,8 @@
 import random
 from datetime import datetime
 from typing import List
-
+import argparse
+import sys
 
 def bullscows(guess: str, secret: str) -> (int, int):
 	cow = 0
@@ -42,5 +43,22 @@ def ask(prompt: str, valid: List[str] = None) -> str:
 def inform(format_string: str, bulls: int, cows: int) -> None:
 	print(format_string.format(bulls, cows))
 
+parser = argparse.ArgumentParser(
+    description="Bulls and Cows",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+
+parser.add_argument(
+    "dictionary", action="store", help="Dictionary file or URL"
+)
+
+parser.add_argument(
+    "len_of_word", action="store", default="5", help="Lenght of secret words", nargs="?", type=int
+)
+
+
+
 if __name__ == "__main__":
-	print(bullscows("ропот", "полип"))
+	args = parser.parse_args(sys.argv[1:])
+	print(args)
+
