@@ -56,14 +56,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "len_of_word", action="store", default="5", help="Lenght of secret words", nargs="?", type=int
+    "len", action="store", default="5", help="Lenght of secret words", nargs="?", type=int
 )
 
 
 
 if __name__ == "__main__":
 	args = parser.parse_args(sys.argv[1:])
-	print(args)
 	my_dict = list()
 	try:
 		with urllib.request.urlopen(args.dictionary) as f:
@@ -75,3 +74,5 @@ if __name__ == "__main__":
 		except Exception as e2:
 			print("Error as URL:\n",  e1)
 			print("Error as file:\n", e2)
+	my_dict = list(filter(lambda x: len(x) == args.len, my_dict))
+	print(my_dict)
