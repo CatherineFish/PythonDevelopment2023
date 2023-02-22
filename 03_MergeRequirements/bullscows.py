@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+from typing import List
 
 
 def bullscows(guess: str, secret: str) -> (int, int):
@@ -17,7 +18,7 @@ def bullscows(guess: str, secret: str) -> (int, int):
 	return (bull, cow)
 
 
-def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
+def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
 	random.seed() #надо ли инициализировать временем? если нет, убрать импорт
 	secret_word = words[random.randint(0, len(words))]
 	print(secret_word)
@@ -30,7 +31,7 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 	return 	tries
 
 
-def ask(prompt: str, valid: list[str] = None) -> str:
+def ask(prompt: str, valid: List[str] = None) -> str:
 	print(str)
 	printed_word = input()
 	if (valid != None and printed_word not in valid):
@@ -38,4 +39,4 @@ def ask(prompt: str, valid: list[str] = None) -> str:
 	return printed_word
 
 if __name__ == "__main__":
-	print(bullscows("ропот", "полип") )
+	print(bullscows("ропот", "полип"))
