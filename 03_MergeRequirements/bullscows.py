@@ -25,7 +25,8 @@ def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
 	guess_word = ""
 	tries = 0
 	while(secret_word != guess_word):
-		ask("Введите слово: ", words)
+		guess_word = ask("Введите слово: ", words)
+		b, c = bullscows(guess_word, secret_word)
 		inform("Быки: {}, Коровы: {}", b, c)
 		tries += 1
 	return 	tries
