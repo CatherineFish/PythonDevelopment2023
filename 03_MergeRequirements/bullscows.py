@@ -68,7 +68,10 @@ if __name__ == "__main__":
 	try:
 		with urllib.request.urlopen(args.dictionary) as f:
 			my_dict = f.read().decode('utf-8').split()
-	except urllib.error.URLError as e:
-		print(e.reason)
-
-
+	except Exception as e1:
+		try:
+			with open(args.dictionary, "r") as f:
+				my_dict = f.read().split()
+		except Exception as e2:
+			print("Error as URL:\n",  e1)
+			print("Error as file:\n", e2)
