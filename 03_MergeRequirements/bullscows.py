@@ -29,3 +29,13 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 		tries += 1
 	return 	tries
 
+
+def ask(prompt: str, valid: list[str] = None) -> str:
+	print(str)
+	printed_word = input()
+	if (valid != None and printed_word not in valid):
+		pritn(str)
+	return printed_word
+
+if __name__ == "__main__":
+	print(bullscows("ропот", "полип") )
