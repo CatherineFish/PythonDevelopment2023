@@ -38,5 +38,8 @@ def ask(prompt: str, valid: List[str] = None) -> str:
 		pritn(str)
 	return printed_word
 
+def inform(format_string: str, bulls: int, cows: int) -> None:
+	print(format_string.format(bulls, cows))
+
 if __name__ == "__main__":
 	print(bullscows("ропот", "полип"))
