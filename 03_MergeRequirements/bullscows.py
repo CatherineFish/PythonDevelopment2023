@@ -4,6 +4,8 @@ import argparse
 import sys
 import urllib.request
 import urllib.error
+import cowsay
+from io import StringIO
 
 
 def bullscows(guess: str, secret: str) -> (int, int):
@@ -22,7 +24,7 @@ def bullscows(guess: str, secret: str) -> (int, int):
 
 
 def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
-	secret_word = words[random.randint(0, len(words))]
+	secret_word = words[random.randint(0, len(words) - 1)]
 	guess_word = ""
 	tries = 0
 	while(secret_word != guess_word):
@@ -34,15 +36,27 @@ def gameplay(ask: callable, inform: callable, words: List[str]) -> int:
 
 
 def ask(prompt: str, valid: List[str] = None) -> str:
-	print(prompt)
+	print(cowsay.cowsay(
+            prompt,
+            cowfile=cow_for_print
+    	  )
+	)
 	printed_word = input()
 	while (valid != None and printed_word not in valid):
-		print(prompt)
+		print(cowsay.cowsay(
+        		prompt,
+            	cowfile=cow_for_print
+    		  )
+		)
 		printed_word = input()
 	return printed_word
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
-	print(format_string.format(bulls, cows))
+	print(cowsay.cowsay(
+            format_string.format(bulls, cows),
+            cowfile=cow_for_print
+    	  )
+	)
 
 parser = argparse.ArgumentParser(
     description="Bulls and Cows",
@@ -57,6 +71,22 @@ parser.add_argument(
     "len", action="store", default="5", help="Lenght of secret words", nargs="?", type=int
 )
 
+cow_for_print = cowsay.read_dot_cow(StringIO("""
+$the_cow = <<EOC;
+         $thoughts
+          $thoughts
+           $thoughts
+             .--.
+            |o_o |
+            |:_/ |
+             .  .      _______
+             |  |     |  _____|
+             |  |     |  |   ()
+             |  |_____|  |   **
+             (           |
+             (___________|
+EOC
+"""))
 
 
 if __name__ == "__main__":
