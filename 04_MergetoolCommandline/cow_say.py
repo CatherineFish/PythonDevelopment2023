@@ -12,12 +12,15 @@ class CowSayCmd(cmd.Cmd):
 		'End command line'
 		return True
 
-	def do_list_cows(self, directory=""):
-		'Lists all cow file names in the given directory'
-		if directory:
-			print(cowsay.list_cows(directory))
+	def do_list_cows(self, arg):
+		"""
+		list_cows [dir]
+		Lists all cow file names in the given directory or default cow list
+		"""
+		if arg:
+			print(*cowsay.list_cows(shlex.split(arg)[0]))
 		else:
-			print(cowsay.list_cows())
+			print(*cowsay.list_cows())
 
 	def do_make_bubble(self, text):
 		'This is the text that appears above the cows'
