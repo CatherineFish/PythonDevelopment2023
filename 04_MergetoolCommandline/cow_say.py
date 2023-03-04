@@ -4,6 +4,27 @@ import shlex
 import readline
 
 
+def complete_cowsay(text, line, begidx, endidx):
+	current_args = shlex.split(line)
+	args_len = len(current_args)
+	default_eyes = ["OO", "XX", "PP", "ZZ", "FF", "AO", "AB"]
+	default_tongue = ["II", "MN", "QK", "DF", "DK", "UU"]
+	if (text == current_args[-1]):
+		if args_len == 3:
+			return [c for c in cowsay.list_cows() if c.startswith(text)]
+		if args_len == 4:
+			return [c for c in default_eyes if c.startswith(text)]
+		if args_len == 5:
+			return [c for c in default_tongue if c.startswith(text)]
+	else:
+		if args_len == 2:
+			return [c for c in cowsay.list_cows() if c.startswith(text)]
+		if args_len == 3:
+			return [c for c in default_eyes if c.startswith(text)]
+		if args_len == 4:
+			return [c for c in default_tongue if c.startswith(text)]
+
+
 class CowSayCmd(cmd.Cmd):
 	intro = "Say cow and enter!"
 	prompt = "moo>"
@@ -72,24 +93,7 @@ class CowSayCmd(cmd.Cmd):
 
 
 	def complete_cowsay(self, text, line, begidx, endidx):
-		current_args = shlex.split(line)
-		args_len = len(current_args)
-		default_eyes = ["OO", "XX", "PP", "ZZ", "FF", "AO", "AB"]
-		default_tongue = ["II", "MN", "QK", "DF", "DK", "UU"]
-		if (text == current_args[-1]):
-			if args_len == 3:
-				return [c for c in cowsay.list_cows() if c.startswith(text)]
-			if args_len == 4:
-				return [c for c in default_eyes if c.startswith(text)]
-			if args_len == 5:
-				return [c for c in default_tongue if c.startswith(text)]
-		else:
-			if args_len == 2:
-				return [c for c in cowsay.list_cows() if c.startswith(text)]
-			if args_len == 3:
-				return [c for c in default_eyes if c.startswith(text)]
-			if args_len == 4:
-				return [c for c in default_tongue if c.startswith(text)]
+		return complete_cowsay(text, line, begidx, endidx)
 
 
 	def do_cowthink(self, arg):
@@ -109,6 +113,10 @@ class CowSayCmd(cmd.Cmd):
 				if len(options) > 2:
 					tongue = options[2] if options[2] else tongue
 		print(cowsay.cowthink(message, eyes=eyes, tongue=tongue, cow=cow))
+
+
+	def complete_cowthink(self, text, line, begidx, endidx):
+		return complete_cowsay(text, line, begidx, endidx)
 
 
 if __name__ == "__main__":
