@@ -22,8 +22,12 @@ class CowSayCmd(cmd.Cmd):
 		print(cowsay.make_bubble(text))
 
 	def do_cowsay(self, text):
-		'Display a message'
+		'Display a message as cow phrases'
 		print(cowsay.cowsay(text))
+
+	def do_cowthink(self, text):
+		'Display a message as cow thought'
+		print(cowsay.cowthink(text))
 
 
 if __name__ == "__main__":
