@@ -22,9 +22,23 @@ class CowSayCmd(cmd.Cmd):
 		else:
 			print(*cowsay.list_cows())
 
-	def do_make_bubble(self, text):
-		'This is the text that appears above the cows'
-		print(cowsay.make_bubble(text))
+	def do_make_bubble(self, args):
+		'''
+		make_buble [width [wrap_text [brackets ]]]
+		This is the text that appears above the cows
+		'''
+		message, *options = shlex.split(args)
+		width = 40
+		wrap_text = True
+		brackets = cowsay.THOUGHT_OPTIONS['cowsay']
+		if options:
+			width = int(options[0])
+			if len(options) > 1:
+				wrap_text = bool(options[1] == 'True')
+				print(wrap_text, type(wrap_text))
+				if len(options) > 2:
+					brackets = options[2]
+		print(cowsay.make_bubble(message, brackets=brackets, width=width, wrap_text=wrap_text))
 
 	def do_cowsay(self, arg):
 		'''
