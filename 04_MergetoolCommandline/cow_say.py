@@ -21,6 +21,10 @@ class CowSayCmd(cmd.Cmd):
 		'This is the text that appears above the cows'
 		print(cowsay.make_bubble(text))
 
+	def do_cowsay(self, text):
+		'Display a message'
+		print(cowsay.cowsay(text))
+
 
 if __name__ == "__main__":
 	CowSayCmd().cmdloop()
