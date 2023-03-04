@@ -27,7 +27,7 @@ class CowSayCmd(cmd.Cmd):
 
 	def do_make_bubble(self, arg):
 		'''
-		make_buble [width [wrap_text [brackets ]]]
+		make_buble [wrap_text [width [brackets ]]]
 		This is the text that appears above the cows
 		'''
 		message, *options = shlex.split(arg)
@@ -44,7 +44,11 @@ class CowSayCmd(cmd.Cmd):
 
 
 	def complete_make_bubble(self, text, line, begidx, endidx):
-		if (len(shlex.split(line)) >= 2):
+		current_args = shlex.split(line)
+		args_len = len(current_args)
+		
+		if ((args_len == 2 and current_args[-1] != text) or 
+			(args_len == 3 and current_args[-1] == text)):
 			wrap_options = ['True', 'False']
 			return [res for res in wrap_options if res.lower().startswith(text.lower())]
 
@@ -65,6 +69,27 @@ class CowSayCmd(cmd.Cmd):
 				if len(options) > 2:
 					tongue = options[2] if options[2] else tongue
 		print(cowsay.cowsay(message, eyes=eyes, tongue=tongue, cow=cow))
+
+
+	def complete_cowsay(self, text, line, begidx, endidx):
+		current_args = shlex.split(line)
+		args_len = len(current_args)
+		default_eyes = ["OO", "XX", "PP", "ZZ", "FF", "AO", "AB"]
+		default_tongue = ["II", "MN", "QK", "DF", "DK", "UU"]
+		if (text == current_args[-1]):
+			if args_len == 3:
+				return [c for c in cowsay.list_cows() if c.startswith(text)]
+			if args_len == 4:
+				return [c for c in default_eyes if c.startswith(text)]
+			if args_len == 5:
+				return [c for c in default_tongue if c.startswith(text)]
+		else:
+			if args_len == 2:
+				return [c for c in cowsay.list_cows() if c.startswith(text)]
+			if args_len == 3:
+				return [c for c in default_eyes if c.startswith(text)]
+			if args_len == 4:
+				return [c for c in default_tongue if c.startswith(text)]
 
 
 	def do_cowthink(self, arg):
