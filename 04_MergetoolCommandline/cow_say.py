@@ -22,22 +22,21 @@ class CowSayCmd(cmd.Cmd):
 		else:
 			print(*cowsay.list_cows())
 
-	def do_make_bubble(self, args):
+	def do_make_bubble(self, arg):
 		'''
 		make_buble [width [wrap_text [brackets ]]]
 		This is the text that appears above the cows
 		'''
-		message, *options = shlex.split(args)
+		message, *options = shlex.split(arg)
 		width = 40
 		wrap_text = True
 		brackets = cowsay.THOUGHT_OPTIONS['cowsay']
 		if options:
-			width = int(options[0])
+			width = int(options[0]) if options[0] else width
 			if len(options) > 1:
-				wrap_text = bool(options[1] == 'True')
-				print(wrap_text, type(wrap_text))
+				wrap_text = bool(options[1] == 'True') if options[1] else wrap_text
 				if len(options) > 2:
-					brackets = options[2]
+					brackets = options[2] if options[2] else brackets
 		print(cowsay.make_bubble(message, brackets=brackets, width=width, wrap_text=wrap_text))
 
 	def do_cowsay(self, arg):
@@ -50,16 +49,30 @@ class CowSayCmd(cmd.Cmd):
 		eyes = 'oo'
 		tongue = '  '
 		if options:
-			cow = options[0]
+			cow = options[0] if options[0] else cow
 			if len(options) > 1:
-				eyes = options[1]
+				eyes = options[1] if options[1] else eyes
 				if len(options) > 2:
-					tongue = options[2]
+					tongue = options[2] if options[2] else tongue
 		print(cowsay.cowsay(message, eyes=eyes, tongue=tongue, cow=cow))
 
-	def do_cowthink(self, text):
-		'Display a message as cow thought'
-		print(cowsay.cowthink(text))
+	def do_cowthink(self, arg):
+		'''
+		cowthink message [cow [eyes [tongue]]]
+		Display a message as cow thought
+		'''
+		message, *options = shlex.split(arg)
+		print(options)
+		cow = 'default'
+		eyes = 'oo'
+		tongue = '  '
+		if options:
+			cow = options[0] if options[0] else cow
+			if len(options) > 1:
+				eyes = options[1] if options[1] else eyes
+				if len(options) > 2:
+					tongue = options[2] if options[2] else tongue
+		print(cowsay.cowthink(message, eyes=eyes, tongue=tongue, cow=cow))
 
 
 if __name__ == "__main__":
