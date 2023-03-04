@@ -4,7 +4,7 @@ import shlex
 import readline
 
 
-def complete_cowsay(text, line, begidx, endidx):
+def complete_cowsay_cowthink(text, line, begidx, endidx):
 	current_args = shlex.split(line)
 	args_len = len(current_args)
 	default_eyes = ["OO", "XX", "PP", "ZZ", "FF", "AO", "AB"]
@@ -23,6 +23,20 @@ def complete_cowsay(text, line, begidx, endidx):
 			return [c for c in default_eyes if c.startswith(text)]
 		if args_len == 4:
 			return [c for c in default_tongue if c.startswith(text)]
+
+
+def cowsay_cowthink(arg):
+	message, *options = shlex.split(arg)
+	cow = 'default'
+	eyes = 'oo'
+	tongue = '  '
+	if options:
+		cow = options[0] if options[0] else cow
+		if len(options) > 1:
+			eyes = options[1] if options[1] else eyes
+			if len(options) > 2:
+				tongue = options[2] if options[2] else tongue
+	return [message, eyes, tongue, cow]
 
 
 class CowSayCmd(cmd.Cmd):
@@ -79,21 +93,12 @@ class CowSayCmd(cmd.Cmd):
 		cowsay message [cow [eyes [tongue]]]
 		Display a message as cow phrases
 		'''
-		message, *options = shlex.split(arg)
-		cow = 'default'
-		eyes = 'oo'
-		tongue = '  '
-		if options:
-			cow = options[0] if options[0] else cow
-			if len(options) > 1:
-				eyes = options[1] if options[1] else eyes
-				if len(options) > 2:
-					tongue = options[2] if options[2] else tongue
+		message, eyes, tongue, cow = cowsay_cowthink(arg)
 		print(cowsay.cowsay(message, eyes=eyes, tongue=tongue, cow=cow))
 
 
 	def complete_cowsay(self, text, line, begidx, endidx):
-		return complete_cowsay(text, line, begidx, endidx)
+		return complete_cowsay_cowthink(text, line, begidx, endidx)
 
 
 	def do_cowthink(self, arg):
@@ -101,22 +106,12 @@ class CowSayCmd(cmd.Cmd):
 		cowthink message [cow [eyes [tongue]]]
 		Display a message as cow thought
 		'''
-		message, *options = shlex.split(arg)
-		print(options)
-		cow = 'default'
-		eyes = 'oo'
-		tongue = '  '
-		if options:
-			cow = options[0] if options[0] else cow
-			if len(options) > 1:
-				eyes = options[1] if options[1] else eyes
-				if len(options) > 2:
-					tongue = options[2] if options[2] else tongue
+		message, eyes, tongue, cow = cowsay_cowthink(arg)
 		print(cowsay.cowthink(message, eyes=eyes, tongue=tongue, cow=cow))
 
 
 	def complete_cowthink(self, text, line, begidx, endidx):
-		return complete_cowsay(text, line, begidx, endidx)
+		return complete_cowsay_cowthink(text, line, begidx, endidx)
 
 
 if __name__ == "__main__":
