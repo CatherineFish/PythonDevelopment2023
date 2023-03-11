@@ -11,6 +11,8 @@ async def chat(reader, writer):
         for q in done:
             if q is send:
                 message = q.result().decode().split()
+        if (len(message) < 1):
+            continue
         if (message[0] == 'cows'):
             writer.write(f"{', '.join(cows_list)}\n".encode())
             await writer.drain()
@@ -24,6 +26,12 @@ async def chat(reader, writer):
                 clients[me] = asyncio.Queue()
                 cows_list.remove(message[1])
                 break
+        elif (message[0] == "quit"):
+                send.cancel()
+                writer.close()
+                await writer.wait_closed()
+                cows_list.append(me)
+                return
 
     send = asyncio.create_task(reader.readline())
     receive = asyncio.create_task(clients[me].get())
@@ -33,6 +41,8 @@ async def chat(reader, writer):
             if q is send:
                 send = asyncio.create_task(reader.readline())
                 message = q.result().decode().split()
+                if (len(message) < 1):
+                    continue
                 if (message[0] == 'cows'):
                     writer.write(f"{', '.join(cows_list)}\n".encode())
                     await writer.drain()
@@ -49,7 +59,14 @@ async def chat(reader, writer):
                         if out is not clients[me]:
                             await out.put(f"{me} {message[1].strip()}")
                 elif (message[0] == "quit"):
-                    break
+                    send.cancel()
+                    receive.cancel()
+                    print(me, "DONE")
+                    del clients[me]
+                    writer.close()
+                    await writer.wait_closed()
+                    cows_list.append(me)
+                    return
             elif q is receive:
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
