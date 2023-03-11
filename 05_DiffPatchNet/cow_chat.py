@@ -13,18 +13,19 @@ async def chat(reader, writer):
                 message = q.result().decode().split()
         if (len(message) < 1):
             continue
-        if (message[0] == 'cows'):
-            writer.write(f"{', '.join(cows_list)}\n".encode())
+        elif (message[0] == 'cows'):
+            writer.write(f"Available cows: {', '.join(cows_list)}\n".encode())
             await writer.drain()
         elif (message[0] == 'who'):
-            writer.write(f"{', '.join(clients.keys())}\n".encode())
+            writer.write(f"Registered users: {', '.join(clients.keys())}\n".encode())
             await writer.drain()
         elif (message[0] == 'login'):
             if (message[1] in cows_list):
                 me = message[1]
-                print(me)
+                print("Registered: ", me)
                 clients[me] = asyncio.Queue()
                 cows_list.remove(message[1])
+                writer.write("You are registered!\n".encode())
                 break
         elif (message[0] == "quit"):
                 send.cancel()
@@ -32,6 +33,8 @@ async def chat(reader, writer):
                 await writer.wait_closed()
                 cows_list.append(me)
                 return
+        else:
+            writer.write("Wrong command!\n".encode())
 
     send = asyncio.create_task(reader.readline())
     receive = asyncio.create_task(clients[me].get())
@@ -43,37 +46,41 @@ async def chat(reader, writer):
                 message = q.result().decode().split()
                 if (len(message) < 1):
                     continue
-                if (message[0] == 'cows'):
-                    writer.write(f"{', '.join(cows_list)}\n".encode())
+                elif (message[0] == 'cows'):
+                    writer.write(f"Available cows: {', '.join(cows_list)}\n".encode())
                     await writer.drain()
                 elif (message[0] == 'who'):
-                    writer.write(f"{', '.join(clients.keys())}\n".encode())
+                    writer.write(f"Registered users: {', '.join(clients.keys())}\n".encode())
                     await writer.drain()
                 elif (message[0] == "say"):
                     if (message[1] in clients.keys()):
-                        await clients[message[1]].put(f"{me} {message[2].strip()}")
+                        await clients[message[1]].put(f"From: {me} Message: <{message[2].strip()}>")
+                        writer.write("Message send!\n".encode())
                     else:
                         writer.write("No user with this name\n".encode())
                 elif (message[0] == 'yield'):
                     for out in clients.values():
                         if out is not clients[me]:
-                            await out.put(f"{me} {message[1].strip()}")
+                            await out.put(f"From: {me} Message: <{message[1].strip()}>")
+                            writer.write("Message send!\n".encode())
                 elif (message[0] == "quit"):
                     send.cancel()
                     receive.cancel()
-                    print(me, "DONE")
                     del clients[me]
                     writer.close()
                     await writer.wait_closed()
                     cows_list.append(me)
+                    print("Unregistered: ", me)
                     return
+                else:
+                    writer.write("Wrong command!\n".encode())
             elif q is receive:
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
                 await writer.drain()
     send.cancel()
     receive.cancel()
-    print(me, "DONE")
+    print("Unregistered: ", me)
     del clients[me]
     writer.close()
     await writer.wait_closed()
