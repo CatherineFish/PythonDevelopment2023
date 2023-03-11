@@ -2,7 +2,7 @@ import asyncio
 import cowsay
 
 clients = {}
-
+cows_list = cowsay.list_cows()
 async def chat(reader, writer):
     while (True):
         send = asyncio.create_task(reader.readline())
@@ -12,16 +12,17 @@ async def chat(reader, writer):
             if q is send:
                 message = q.result().decode().split()
         if (message[0] == 'cows'):
-            writer.write(f"{cowsay.list_cows()}\n".encode())
+            writer.write(f"{', '.join(cows_list)}\n".encode())
             await writer.drain()
         elif (message[0] == 'who'):
-            writer.write(f"{clients}\n".encode())
+            writer.write(f"{', '.join(clients.keys())}\n".encode())
             await writer.drain()
         elif (message[0] == 'login'):
-            if (message[1] in cowsay.list_cows()):
+            if (message[1] in cows_list):
                 me = message[1]
                 print(me)
                 clients[me] = asyncio.Queue()
+                cows_list.remove(message[1])
                 break
 
     send = asyncio.create_task(reader.readline())
