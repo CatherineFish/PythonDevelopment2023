@@ -32,9 +32,24 @@ async def chat(reader, writer):
         for q in done:
             if q is send:
                 send = asyncio.create_task(reader.readline())
-                for out in clients.values():
-                    if out is not clients[me]:
-                        await out.put(f"{me} {q.result().decode().strip()}")
+                message = q.result().decode().split()
+                if (message[0] == 'cows'):
+                    writer.write(f"{', '.join(cows_list)}\n".encode())
+                    await writer.drain()
+                elif (message[0] == 'who'):
+                    writer.write(f"{', '.join(clients.keys())}\n".encode())
+                    await writer.drain()
+                elif (message[0] == "say"):
+                    if (message[1] in clients.keys()):
+                        await clients[message[1]].put(f"{me} {message[2].strip()}")
+                    else:
+                        writer.write("No user with this name\n".encode())
+                elif (message[0] == 'yield'):
+                    for out in clients.values():
+                        if out is not clients[me]:
+                            await out.put(f"{me} {message[1].strip()}")
+                elif (message[0] == "quit"):
+                    break
             elif q is receive:
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
