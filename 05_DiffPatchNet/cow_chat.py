@@ -29,7 +29,7 @@ async def chat(reader, writer):
                         await writer.drain()
                         continue
                     if (message[1] in clients.keys()):
-                        await clients[message[1]].put(f"From: {me}\n {cowsay.cowsay(message[2].strip(), cow=me)}")
+                        await clients[message[1]].put(f"From: {me}\n {cowsay.cowsay((' '.join(message[2:])).strip(), cow=me)}")
                         writer.write("Message send!\n".encode())
                         await writer.drain()
                     else:
@@ -42,7 +42,7 @@ async def chat(reader, writer):
                         continue
                     for out in clients.values():
                         if out is not clients[me]:
-                            await out.put(f"From: {me}\n {cowsay.cowsay(message[1].strip(), cow=me)}")
+                            await out.put(f"From: {me}\n {cowsay.cowsay(' '.join(message[1:]).strip(), cow=me)}")
                     writer.write("Message send!\n".encode())
                     await writer.drain()
                 elif (message[0] == 'login' and not(is_registered)):
