@@ -5,40 +5,10 @@ clients = {}
 cows_list = cowsay.list_cows()
 async def chat(reader, writer):
     is_registered = False
-    while (True):
-        send = asyncio.create_task(reader.readline())
-        done, pending = await asyncio.wait([send], return_when=asyncio.ALL_COMPLETED)
-        message = ""
-        for q in done:
-            if q is send:
-                message = q.result().decode().split()
-        if (len(message) < 1):
-            continue
-        elif (message[0] == 'cows'):
-            writer.write(f"Available cows: {', '.join(cows_list)}\n".encode())
-            await writer.drain()
-        elif (message[0] == 'who'):
-            writer.write(f"Registered users: {', '.join(clients.keys())}\n".encode())
-            await writer.drain()
-        elif (message[0] == 'login'):
-            if (message[1] in cows_list):
-                me = message[1]
-                print("Registered: ", me)
-                clients[me] = asyncio.Queue()
-                cows_list.remove(message[1])
-                writer.write("You are registered!\n".encode())
-                break
-        elif (message[0] == "quit"):
-                send.cancel()
-                writer.close()
-                await writer.wait_closed()
-                cows_list.append(me)
-                return
-        else:
-            writer.write("Wrong command!\n".encode())
-
+    me = ""
+    buffQueue = asyncio.Queue()
     send = asyncio.create_task(reader.readline())
-    receive = asyncio.create_task(clients[me].get())
+    receive = asyncio.create_task(buffQueue.get())
     while not reader.at_eof():
         done, pending = await asyncio.wait([send, receive], return_when=asyncio.FIRST_COMPLETED)
         for q in done:
@@ -54,7 +24,7 @@ async def chat(reader, writer):
                     writer.write(f"Registered users: {', '.join(clients.keys())}\n".encode())
                     await writer.drain()
                 elif (message[0] == "say"):
-                    if (!is_registered):
+                    if (not(is_registered)):
                         writer.write("You are not registered!\n".encode())
                         await writer.drain()
                         continue
@@ -66,16 +36,16 @@ async def chat(reader, writer):
                         writer.write("No user with this name\n".encode())
                         await writer.drain()
                 elif (message[0] == 'yield'):
-                    if (!is_registered):
+                    if (not(is_registered)):
                         writer.write("You are not registered!\n".encode())
                         await writer.drain()
                         continue
                     for out in clients.values():
                         if out is not clients[me]:
-                            await out.put(f"From: {me} Message: <{message[1].strip()}>")
-                            writer.write("Message send!\n".encode())
-                            await writer.drain()
-                elif (message[0] == 'login' and !is_registered):
+                            await out.put(f"From: {me}, Message: <{message[1].strip()}>")
+                        writer.write("Message send!\n".encode())
+                        await writer.drain()
+                elif (message[0] == 'login' and not(is_registered)):
                     if (message[1] in cows_list):
                         me = message[1]
                         print("Registered: ", me)
@@ -84,6 +54,8 @@ async def chat(reader, writer):
                         writer.write("You are registered!\n".encode())
                         await writer.drain()
                         is_registered = True
+                        receive.cancel()
+                        receive = asyncio.create_task(clients[me].get())
                     else:
                         writer.write("Invalid name!\n".encode())
                         await writer.drain()
