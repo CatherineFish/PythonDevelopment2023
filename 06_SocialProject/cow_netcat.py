@@ -2,6 +2,7 @@ import cmd
 import threading
 import time
 import readline
+import sys, shlex
 import asyncio
 
 async def write(message, writer):
@@ -16,6 +17,24 @@ class CowNetcat(cmd.Cmd):
 
     def do_who(self, arg):
         asyncio.run(write("who", self.writer))
+
+    def do_cows(self, arg):
+        asyncio.run(write("cows", self.writer))
+
+    def do_login(self, arg):
+        login, *trash = shlex.split(arg)
+        asyncio.run(write(f"login {login}", self.writer))
+
+    def do_say(self, arg):
+        cow_name, message, *trash = shlex.split(arg)
+        asyncio.run(write(f"say {cow_name} {message}", self.writer))
+
+    def do_yield(self, arg):
+        message, *trash = shlex.split(arg)
+        asyncio.run(write(f"yield {message}", self.writer))
+
+    def do_quit(self, arg):
+        asyncio.run(write("quit", self.writer))
 
 
 def spam(cmdline, timeout, count):
@@ -35,4 +54,4 @@ async def main():
 
 
 cmd = asyncio.run(main())
-asyncio.run(cmd.cmdloop())
+cmd.cmdloop()
