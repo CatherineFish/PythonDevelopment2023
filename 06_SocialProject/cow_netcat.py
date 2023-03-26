@@ -51,7 +51,7 @@ class CowNetcat(cmd.Cmd):
         with self.locker:
             write(f"cows\n")
             data = get_message(timeout=None)
-            cows = data.split(",")
+            cows = list(map(lambda x: x.replace("'", "").strip(), data[1:-1].split(",")))
             return [s for s in cows if s.startswith(text)] 
 
     def do_say(self, arg):
