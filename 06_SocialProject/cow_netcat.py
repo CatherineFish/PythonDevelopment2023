@@ -9,72 +9,70 @@ import select
 
 HOST = '0.0.0.0'
 PORT = 1337  
+s = None
+    
 
+def write(message):
+    s.send(f"{message}\n".encode())
 
-def write(message, socket):
-    socket.send(f"{message}\n".encode())
-
-def get_message(socket):
-    event, *trash = select.select([socket], [], [], 0.0)
+def get_message(timeout):
+    event, *trash = select.select([s], [], [], timeout)
     for sock in event:
-        return sock.recv(1024).decode().strip()
+        data = sock.recv(1024).decode().strip()
+        return data
     return ""
 
 
-def recive_messages(socket, cmdline):
+def recive_messages(cmdline, locker):
     while True:
-        data = get_message(socket)
+        with locker:
+            data = get_message(0)
         if data:
-            print(f'{data}\n{cmdline.prompt}{readline.get_line_buffer()}', end="", flush=True)
+            print(f'RESULT {data}\n{cmdline.prompt}{readline.get_line_buffer()}', end="", flush=True)
 
 
 class CowNetcat(cmd.Cmd):
 
-    def __init__(self, socket, locker):
+    def __init__(self, locker):
         super(CowNetcat, self).__init__()
-        self.sock = socket
         self.locker = locker
         
     def do_who(self, arg):
-        write("who", self.sock)
+        write("who")
 
     def do_cows(self, arg):
-        write("cows", self.sock)
+        write("cows")
 
     def do_login(self, arg):
         login, *trash = shlex.split(arg)
-        write(f"login {login}", self.sock)
+        write(f"login {login}")
 
     def complete_login(self, text, line, begidx, endidx):
-        current_args = shlex.split(line)
-        args_len = len(current_args)
-        if args_len <= 2:
-            with self.locker:
-                write("cows", self.sock) 
-                return [res for res in get_message(self.sock) if res.startwith(text.lower())]    
+        with self.locker:
+            write(f"cows\n")
+            data = get_message(timeout=None)
+            cows = data.split(",")
+            return [s for s in cows if s.startswith(text)] 
 
     def do_say(self, arg):
         cow_name, message, *trash = shlex.split(arg)
-        write(f"say {cow_name} {message}", self.sock)
+        write(f"say {cow_name} {message}")
 
     def complete_say(self, text, line, begidx, endidx):
         pass  
 
     def do_yield(self, arg):
         message, *trash = shlex.split(arg)
-        write(f"yield {message}", self.sock)
+        write(f"yield {message}")
 
     def complete_yield(self, text, line, begidx, endidx):
         pass  
 
-    def do_quit(self, arg):
-        write("quit", self.sock)
-        exit(0)
+    
 
         
 
 if __name__ == "__main__":
-    s = None
     for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
         af, socktype, proto, canonname, sa = res
         try:
@@ -96,8 +94,8 @@ if __name__ == "__main__":
     with s:
 
         locker = threading.Lock()
-        cmdline = CowNetcat(s, locker)
-        thread = threading.Thread(target=recive_messages, args=(s, cmdline))
+        cmdline = CowNetcat(locker)
+        thread = threading.Thread(target=recive_messages, args=(cmdline, locker))
         thread.start()
         cmdline.cmdloop()
 
