@@ -14,13 +14,12 @@ def write(message, socket):
     socket.send(f"{message}\n".encode())
     
 
-#async def send_messages_as(reader):
-#    send = asyncio.create_task(reader.readline())
-#    while not reader.at_eof():
-#        done, pending = await asyncio.wait([send], return_when=asyncio.ALL_COMPLETED)
-#        for q in done:
-#            send = asyncio.create_task(reader.readline())
-#            print(f'{q.result().decode()}\n{cmdline.prompt}{readline.get_line_buffer()}', end="", flush=True)
+def recive_messages(socket):
+    while True:
+        data = socket.recv(1024).decode().strip()
+        if not(data):
+            break
+        print(f'{data}\n{cmdline.prompt}{readline.get_line_buffer()}', end="", flush=True)
 
 
 class CowNetcat(cmd.Cmd):
@@ -50,9 +49,6 @@ class CowNetcat(cmd.Cmd):
     def do_quit(self, arg):
         write("quit", self.sock)
 
-
-    #def send_messages(self):
-    #    send_messages_as(self.reader))
         
 
 if __name__ == "__main__":
@@ -66,7 +62,6 @@ if __name__ == "__main__":
             continue
         try:
             s.connect(sa)
-            s.setblocking(False)
         except OSError as msg:
             s.close()
             s = None
@@ -77,9 +72,7 @@ if __name__ == "__main__":
         sys.exit(1)
     with s:
         cmdline = CowNetcat(s)
+        thread = threading.Thread(target=recive_messages, args=(s,))
+        thread.start()
         cmdline.cmdloop()
-    
 
-    
-#sender.run()
-    
