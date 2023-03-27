@@ -16,10 +16,13 @@ def write(message):
     s.send(f"{message}\n".encode())
 
 def get_message(timeout):
-    event, *trash = select.select([s], [], [], timeout)
-    for sock in event:
-        return sock.recv(1024).decode().strip()
-    return ""
+    try:
+        event, *trash = select.select([s], [], [], timeout)
+        for sock in event:
+            return sock.recv(1024).decode().strip()
+        return ""
+    except ValueError:
+        sys.exit(0)
     
 
 def recive_messages(cmdline, locker):
@@ -75,7 +78,7 @@ class CowNetcat(cmd.Cmd):
         message, *trash = shlex.split(arg)
         write(f"yield {message}")
 
-    def do_quit(self):
+    def do_quit(self, args):
         write(f"quit")
         sys.exit(0)
 
