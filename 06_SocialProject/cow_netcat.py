@@ -20,23 +20,14 @@ def get_message(timeout):
     for sock in event:
         return sock.recv(1024).decode().strip()
     return ""
-
-def complete_say_yield(self, text, line, begidx, endidx):
-    current_args = shlex.split(line)
-    args_len = len(current_args)
-    if args_len <= 2:
-        with self.locker:
-            write(f"who\n")
-            data = get_message(timeout=None)
-            cows = list(map(lambda x: x.replace("'", "").strip(), data[18:].split(",")))
-            return [s for s in cows if s.startswith(text)] 
+    
 
 def recive_messages(cmdline, locker):
     while True:
         with locker:
             data = get_message(0)
         if data:
-            print(f'{data}\n{cmdline.prompt}{readline.get_line_buffer()}', end="", flush=True)
+            print(f'\n{data}\n{cmdline.prompt}{readline.get_line_buffer()}', end="", flush=True)
 
 
 class CowNetcat(cmd.Cmd):
@@ -71,14 +62,23 @@ class CowNetcat(cmd.Cmd):
         write(f"say {cow_name} {message}")
 
     def complete_say(self, text, line, begidx, endidx):
-        return complete_say_yield(self, text, line, begidx, endidx)
+        current_args = shlex.split(line)
+        args_len = len(current_args)
+        if args_len <= 2:
+            with self.locker:
+                write(f"who\n")
+                data = get_message(timeout=None)
+                cows = list(map(lambda x: x.replace("'", "").strip(), data[18:].split(",")))
+                return [res for res in cows if res.startswith(text) and res != self.my_log] 
 
     def do_yield(self, arg):
         message, *trash = shlex.split(arg)
         write(f"yield {message}")
 
-    def complete_yield(self, text, line, begidx, endidx):
-        return complete_say_yield(self, text, line, begidx, endidx)
+    def do_quit(self):
+        write(f"quit")
+        sys.exit(0)
+
 
 if __name__ == "__main__":
     for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
