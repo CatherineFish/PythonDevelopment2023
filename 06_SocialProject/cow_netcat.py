@@ -40,12 +40,24 @@ class CowNetcat(cmd.Cmd):
         self.locker = locker
         
     def do_who(self, arg):
+        """
+        who
+        Lists all registered users
+        """
         write("who")
 
     def do_cows(self, arg):
+        """
+        cows
+        Lists all possible cow login name
+        """
         write("cows")
 
     def do_login(self, arg):
+        """
+        login your_login
+        Register with <yur_login> name
+        """
         login, *trash = shlex.split(arg)
         write(f"login {login}")
         self.my_log = login
@@ -61,6 +73,10 @@ class CowNetcat(cmd.Cmd):
                 return [s for s in cows if s.startswith(text)] 
 
     def do_say(self, arg):
+        """
+        say user_login message
+        Send <message> to <user_login>
+        """
         cow_name, message, *trash = shlex.split(arg)
         write(f"say {cow_name} {message}")
 
@@ -75,10 +91,18 @@ class CowNetcat(cmd.Cmd):
                 return [res for res in cows if res.startswith(text) and res != self.my_log] 
 
     def do_yield(self, arg):
+        """
+        yield message
+        Send <message> to everyone
+        """
         message, *trash = shlex.split(arg)
         write(f"yield {message}")
 
     def do_quit(self, args):
+        """
+        quit
+        Disconnect from chat
+        """
         write(f"quit")
         sys.exit(0)
 
